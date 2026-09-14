@@ -60,14 +60,24 @@ with open('tweets.json', 'w', encoding='utf-8') as f:
 
 1. Participant enters an ID and clicks start, which triggers a `fetch("tweets.json")`
    to load the tweet pool.
-2. The app randomly shuffles the pool and shows 5 tweets, one at a time,
-   with 6 emotion buttons.
-3. When all 5 are labeled, the app `POST`s a JSON batch to your deployed
-   Apps Script Web App URL.
-4. The Apps Script backend appends one row per labeled tweet to a "Labels"
+2. The app randomly shuffles the pool and picks 5 tweets for that participant.
+3. The labeling screen shows one tweet at a time, with a persistent
+   "Emotion guide" panel on the right (definition + example for each of
+   the six emotions) that stays visible the whole time.
+4. Selecting an emotion visibly highlights that choice; clicking
+   **Submit answer** saves it and moves to the next unanswered tweet.
+5. A progress bar below the tweet card shows all 5 tweets (numbered,
+   checked off once answered). Participants can click any number to jump
+   back, review, and change a previous answer at any point before finishing.
+6. Once all 5 are answered, **Finish & submit all 5 answers** becomes
+   enabled. Clicking it `POST`s the batch to your deployed Apps Script Web
+   App URL, and the participant sees a simple thank-you message — no data
+   export or download is offered to participants.
+7. The Apps Script backend appends one row per labeled tweet to a "Labels"
    sheet: `timestamp, participant, tweet_id, tweet_text, true_label, chosen_label`.
-5. The "View collected results" link `GET`s all rows back and displays them
-   in a table, with a "Download as CSV" button for a local file.
+8. The "View collected results" link (on the intro screen) `GET`s all rows
+   back and displays them in a table — this is for you as the task
+   deployer/researcher, not shown to participants during the task.
 
 ## Setup — Part 1: backend (Google Sheet + Apps Script)
 
@@ -134,14 +144,15 @@ Keep this URL — you'll paste it into the frontend next.
 ## Testing it
 
 1. Open your GitHub Pages URL.
-2. Enter a participant ID and label all 5 tweets.
-3. You should land on a confirmation screen ("All done — thank you").
-4. Click **View collected results** — you should see your row(s) in the
-   table. This is also where the assignment's required "screenshot of data
-   collected" comes from.
-5. Optionally click **Download as CSV** to get a local file of everything
-   collected so far.
-6. You can also just open the Google Sheet directly to see the raw rows.
+2. Enter a participant ID and label all 5 tweets (try clicking back to an
+   earlier tweet via the progress bar and changing your answer, to confirm
+   that works).
+3. After clicking **Finish & submit all 5 answers**, you should land on a
+   simple "Thank you!" screen.
+4. Go back to the intro screen and click **View collected results** — you
+   should see your row(s) in the table. This is also where the
+   assignment's required "screenshot of data collected" comes from.
+5. You can also just open the Google Sheet directly to see the raw rows.
 
 ## Troubleshooting
 
@@ -172,3 +183,13 @@ Keep this URL — you'll paste it into the frontend next.
   which comfortably satisfies "at least 50 tweets... cover all six emotion
   categories," and every participant gets a random 5 drawn from the whole
   set rather than a fixed shortlist.
+- The right-hand "Emotion guide" panel (definition + example tweet per
+  emotion) stays visible throughout the intro and labeling screens, so
+  participants always have a reference for what each label means.
+- Participants can revisit and change any of their 5 answers (via the
+  progress bar) before hitting the final "Finish & submit" button, so
+  labels aren't locked in the moment a button is clicked.
+- Participants only ever see a thank-you message at the end — there's no
+  CSV download or raw-data exposure in their flow. Data export (CSV or
+  otherwise) is left to you as the researcher, via the Google Sheet
+  directly or the "View collected results" table.
