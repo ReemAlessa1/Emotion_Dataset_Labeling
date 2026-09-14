@@ -92,6 +92,7 @@
       <label for="pid">Your name or participant ID</label>
       <input type="text" id="pid" placeholder="e.g. jordan_p or P014">
       <button class="primary" id="start-btn">Start labeling</button>
+      <div id="intro-error"></div>
     </div>
     <div class="footer-note">Your responses are saved with your ID so we know who labeled what.<br>
       <a class="link-btn" id="view-results-link">View collected results &rarr;</a>
@@ -160,71 +161,30 @@ const EMOTIONS = [
   {key:"surprise", label:"Surprise"},
 ];
 
-// 54 sample tweets, 9 per emotion, styled after dair-ai/emotion (informal, lowercase, first-person).
-// Swap this array for real rows pulled from the actual dair-ai/emotion dataset if you have them.
-const TWEETS = [
-  {id:"t01", label:"anger", text:"i am so angry i could just scream right now"},
-  {id:"t02", label:"anger", text:"cannot believe he lied to my face again this is infuriating"},
-  {id:"t03", label:"anger", text:"why does everyone keep interrupting me im getting really irritated"},
-  {id:"t04", label:"anger", text:"the customer service today made me absolutely furious"},
-  {id:"t05", label:"anger", text:"i feel so frustrated that nothing i do seems to work out"},
-  {id:"t06", label:"anger", text:"stuck in traffic for two hours and im livid"},
-  {id:"t07", label:"anger", text:"they cancelled the meeting last minute again and it makes me so mad"},
-  {id:"t08", label:"anger", text:"i am seething after reading those comments about my work"},
-  {id:"t09", label:"anger", text:"so annoyed that my flight got delayed with zero explanation"},
-
-  {id:"t10", label:"fear", text:"i feel terrified walking home alone in the dark"},
-  {id:"t11", label:"fear", text:"the thought of the exam results coming out tomorrow makes me so anxious"},
-  {id:"t12", label:"fear", text:"i am scared something bad is going to happen to my family"},
-  {id:"t13", label:"fear", text:"my hands are shaking i think im having a panic attack"},
-  {id:"t14", label:"fear", text:"im dreading the surgery next week i cant stop worrying"},
-  {id:"t15", label:"fear", text:"the strange noise outside my window has me completely on edge"},
-  {id:"t16", label:"fear", text:"i feel uneasy about the new job starting monday"},
-  {id:"t17", label:"fear", text:"im so nervous about the interview i can barely eat"},
-  {id:"t18", label:"fear", text:"the turbulence on the flight had me gripping my seat in fear"},
-
-  {id:"t19", label:"joy", text:"i just got the best news of my life and i cant stop smiling"},
-  {id:"t20", label:"joy", text:"feeling so happy after spending the whole day with my friends"},
-  {id:"t21", label:"joy", text:"this is honestly the best day ive had in months"},
-  {id:"t22", label:"joy", text:"i am overjoyed my sister is finally coming to visit"},
-  {id:"t23", label:"joy", text:"waking up to sunshine and coffee always makes me feel great"},
-  {id:"t24", label:"joy", text:"so thrilled i finally finished the marathon i trained so hard for"},
-  {id:"t25", label:"joy", text:"i feel amazing after that concert last night"},
-  {id:"t26", label:"joy", text:"im delighted with how the surprise party turned out"},
-  {id:"t27", label:"joy", text:"nothing beats the joy of a lazy sunday with good food"},
-
-  {id:"t28", label:"love", text:"i love spending quiet mornings with my partner before work"},
-  {id:"t29", label:"love", text:"my heart is so full watching my kids play together"},
-  {id:"t30", label:"love", text:"i feel so adored whenever he leaves little notes for me"},
-  {id:"t31", label:"love", text:"grateful for friends who feel like family"},
-  {id:"t32", label:"love", text:"there is so much warmth in this house tonight"},
-  {id:"t33", label:"love", text:"i cherish every single moment we spend together"},
-  {id:"t34", label:"love", text:"my grandmother's hugs make me feel so loved"},
-  {id:"t35", label:"love", text:"im so fond of this little town and everyone in it"},
-  {id:"t36", label:"love", text:"nothing compares to the affection i feel for my dog"},
-
-  {id:"t37", label:"sadness", text:"i feel so lonely since everyone moved away"},
-  {id:"t38", label:"sadness", text:"im heartbroken after hearing the news about my old friend"},
-  {id:"t39", label:"sadness", text:"everything feels heavy today and i just want to cry"},
-  {id:"t40", label:"sadness", text:"i miss my childhood home more than i can explain"},
-  {id:"t41", label:"sadness", text:"feeling so down after losing the job i loved"},
-  {id:"t42", label:"sadness", text:"im grieving the loss of my grandfather this week"},
-  {id:"t43", label:"sadness", text:"it hurts to see the old house being torn down"},
-  {id:"t44", label:"sadness", text:"i feel empty after the breakup even weeks later"},
-  {id:"t45", label:"sadness", text:"so sad that summer is already coming to an end"},
-
-  {id:"t46", label:"surprise", text:"i cannot believe they threw me a surprise party i had no idea"},
-  {id:"t47", label:"surprise", text:"woke up to find out i got the scholarship im shocked"},
-  {id:"t48", label:"surprise", text:"never expected to bump into my old teacher at the airport"},
-  {id:"t49", label:"surprise", text:"im stunned by how quickly the whole project came together"},
-  {id:"t50", label:"surprise", text:"did not see that plot twist coming at all"},
-  {id:"t51", label:"surprise", text:"shocked to hear the store is closing after all these years"},
-  {id:"t52", label:"surprise", text:"i was amazed to find a hundred dollar bill in my old coat"},
-  {id:"t53", label:"surprise", text:"cant believe how much the city has changed since i left"},
-  {id:"t54", label:"surprise", text:"totally caught off guard by the fire alarm going off at midnight"},
-];
+// The tweet pool is loaded at runtime from tweets.json (sampled from the real
+// dair-ai/emotion dataset), rather than being hardcoded here. See loadTweetPool().
+let TWEETS = [];
+let tweetsLoaded = false;
+let tweetsLoadError = null;
 
 let session = { participant:"", tweets:[], answers:[], idx:0 };
+
+async function loadTweetPool(){
+  if(tweetsLoaded) return true;
+  try{
+    const res = await fetch("tweets.json");
+    if(!res.ok) throw new Error(`Could not load tweets.json (status ${res.status})`);
+    const data = await res.json();
+    if(!Array.isArray(data) || data.length === 0) throw new Error("tweets.json is empty or malformed");
+    TWEETS = data;
+    tweetsLoaded = true;
+    return true;
+  } catch(err){
+    console.error(err);
+    tweetsLoadError = err.message;
+    return false;
+  }
+}
 
 function shuffle(arr){
   const a = arr.slice();
@@ -245,7 +205,7 @@ function endpointConfigured(){
   return CONFIG.APPS_SCRIPT_URL && !CONFIG.APPS_SCRIPT_URL.includes("PASTE_YOUR");
 }
 
-document.getElementById("start-btn").addEventListener("click", ()=>{
+document.getElementById("start-btn").addEventListener("click", async ()=>{
   const pidInput = document.getElementById("pid");
   const pid = pidInput.value.trim();
   if(!pid){
@@ -253,6 +213,27 @@ document.getElementById("start-btn").addEventListener("click", ()=>{
     pidInput.placeholder = "please enter an ID to continue";
     return;
   }
+
+  const startBtn = document.getElementById("start-btn");
+  const introError = document.getElementById("intro-error");
+  introError.innerHTML = "";
+  startBtn.disabled = true;
+  startBtn.textContent = "Loading tweets...";
+
+  const ok = await loadTweetPool();
+
+  startBtn.disabled = false;
+  startBtn.textContent = "Start labeling";
+
+  if(!ok){
+    introError.innerHTML = `<div class="error-box">Couldn't load the tweet pool (${escapeHtml(tweetsLoadError)}). Make sure tweets.json is in the same folder as index.html and you're viewing this over http(s), not a local file:// path.</div>`;
+    return;
+  }
+  if(TWEETS.length < 5){
+    introError.innerHTML = `<div class="error-box">tweets.json only has ${TWEETS.length} tweet(s) — need at least 5 to run the task.</div>`;
+    return;
+  }
+
   session = { participant: pid, tweets: shuffle(TWEETS).slice(0,5), answers: [], idx: 0 };
   renderTweet();
   show("screen-task");
