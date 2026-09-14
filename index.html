@@ -79,17 +79,24 @@
   .tweet-box{position:relative;background:#151A20;border:1px solid var(--card-line);border-radius:10px;padding:24px 22px;margin:8px 0 22px 0;font-size:19px;line-height:1.5;}
   .tweet-box::before{content:"\201C";position:absolute;top:-6px;left:14px;font-size:42px;color:var(--card-line);font-family:Georgia,serif;}
   .emo-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px;}
-  .emo-btn{padding:14px 10px;border-radius:9px;border:1px solid var(--card-line);background:transparent;color:var(--ink);font-size:15px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;transition:transform 0.08s ease, border-color 0.08s ease, background 0.08s ease;}
+  .emo-btn{padding:14px 10px;border-radius:9px;border:1px solid var(--card-line);background:transparent;color:var(--ink);font-size:15px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;transition:transform 0.08s ease, border-color 0.08s ease, background 0.08s ease, color 0.08s ease;}
   .emo-btn:hover{transform:translateY(-1px);}
-  .emo-btn.selected{border-color:var(--ink);background:#242B33;}
-  .emo-btn.selected .emo-dot{box-shadow:0 0 0 3px rgba(232,230,225,0.18);}
-  .emo-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-  .emo-btn.anger .emo-dot{background:var(--anger);}
-  .emo-btn.fear .emo-dot{background:var(--fear);}
-  .emo-btn.joy .emo-dot{background:var(--joy);}
-  .emo-btn.love .emo-dot{background:var(--love);}
-  .emo-btn.sadness .emo-dot{background:var(--sadness);}
-  .emo-btn.surprise .emo-dot{background:var(--surprise);}
+  .emo-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;background:var(--btn-color);}
+  .emo-btn.anger{--btn-color:var(--anger);}
+  .emo-btn.fear{--btn-color:var(--fear);}
+  .emo-btn.joy{--btn-color:var(--joy);}
+  .emo-btn.love{--btn-color:var(--love);}
+  .emo-btn.sadness{--btn-color:var(--sadness);}
+  .emo-btn.surprise{--btn-color:var(--surprise);}
+  .emo-btn.selected{
+    background:var(--btn-color);
+    border-color:var(--btn-color);
+    color:#fff;
+  }
+  .emo-btn.selected .emo-dot{
+    background:#fff;
+    box-shadow:0 0 0 3px rgba(255,255,255,0.28);
+  }
   .selection-hint{font-size:13px;color:var(--ink-dim);min-height:18px;margin-bottom:2px;}
 
   /* progress bar */
