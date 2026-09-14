@@ -26,14 +26,12 @@
     color:var(--ink);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
     min-height:100vh;
-    display:flex;
-    align-items:flex-start;
-    justify-content:center;
     padding:48px 16px;
   }
-  .wrap{width:100%;max-width:600px;}
+  .page{max-width:900px;margin:0 auto;}
   .eyebrow{font-size:13px;color:var(--ink-dim);letter-spacing:0.02em;margin-bottom:6px;}
   h1{font-size:28px;font-weight:700;margin:0 0 18px 0;letter-spacing:-0.01em;}
+  h2{font-size:16px;font-weight:700;margin:0 0 4px 0;}
   .card{background:var(--card);border:1px solid var(--card-line);border-radius:var(--radius);padding:28px;margin-bottom:16px;}
   p{line-height:1.55;color:var(--ink);margin:0 0 12px 0;}
   .muted{color:var(--ink-dim);font-size:14px;}
@@ -43,26 +41,9 @@
   input[type=text]{width:100%;padding:12px 14px;background:#151A20;border:1px solid var(--card-line);border-radius:8px;color:var(--ink);font-size:15px;outline:none;}
   input[type=text]:focus{border-color:#5A6472;}
   button.primary{margin-top:18px;width:100%;padding:13px 18px;background:var(--ink);color:var(--bg);border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;}
-  button.primary:disabled{opacity:0.4;cursor:not-allowed;}
+  button.primary:disabled{opacity:0.35;cursor:not-allowed;}
   button.primary:hover:not(:disabled){opacity:0.9;}
   button.secondary{background:transparent;color:var(--ink);border:1px solid var(--card-line);}
-  .dots{display:flex;gap:6px;margin-bottom:14px;}
-  .dot{height:5px;flex:1;background:var(--card-line);border-radius:3px;overflow:hidden;}
-  .dot.done{background:var(--ink-dim);}
-  .dot.current{background:var(--ink);}
-  .tweet-box{position:relative;background:#151A20;border:1px solid var(--card-line);border-radius:10px;padding:24px 22px;margin:18px 0 22px 0;font-size:19px;line-height:1.5;}
-  .tweet-box::before{content:"\201C";position:absolute;top:-6px;left:14px;font-size:42px;color:var(--card-line);font-family:Georgia,serif;}
-  .emo-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-  .emo-btn{padding:14px 10px;border-radius:9px;border:1px solid var(--card-line);background:transparent;color:var(--ink);font-size:15px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;transition:transform 0.08s ease;}
-  .emo-btn:hover{transform:translateY(-1px);}
-  .emo-btn:disabled{opacity:0.5;cursor:not-allowed;}
-  .emo-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-  .emo-btn.anger .emo-dot{background:var(--anger);}
-  .emo-btn.fear .emo-dot{background:var(--fear);}
-  .emo-btn.joy .emo-dot{background:var(--joy);}
-  .emo-btn.love .emo-dot{background:var(--love);}
-  .emo-btn.sadness .emo-dot{background:var(--sadness);}
-  .emo-btn.surprise .emo-dot{background:var(--surprise);}
   .hidden{display:none;}
   .footer-note{font-size:12px;color:var(--ink-dim);text-align:center;margin-top:18px;}
   a.link-btn{color:var(--ink-dim);font-size:13px;text-decoration:underline;cursor:pointer;}
@@ -72,27 +53,80 @@
   .badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:12px;font-weight:600;}
   .error-box{background:#2A1616;border:1px solid var(--anger);color:#F0C4C0;padding:12px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;}
   .spinner-text{color:var(--ink-dim);font-size:14px;}
+
+  /* two-column layout: main content + persistent instructions sidebar */
+  .layout{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start;}
+  .layout.no-sidebar{grid-template-columns:1fr;max-width:600px;margin:0 auto;}
+  @media (max-width:820px){
+    .layout{grid-template-columns:1fr;}
+    .side-col{position:static !important;}
+  }
+  .side-col{position:sticky;top:48px;}
+  .guide-item{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--card-line);}
+  .guide-item:last-child{border-bottom:none;}
+  .guide-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+  .guide-dot.anger{background:var(--anger);}
+  .guide-dot.fear{background:var(--fear);}
+  .guide-dot.joy{background:var(--joy);}
+  .guide-dot.love{background:var(--love);}
+  .guide-dot.sadness{background:var(--sadness);}
+  .guide-dot.surprise{background:var(--surprise);}
+  .guide-text .guide-name{font-weight:700;font-size:14px;margin-bottom:2px;}
+  .guide-text .guide-def{font-size:13px;color:var(--ink-dim);line-height:1.5;margin-bottom:4px;}
+  .guide-text .guide-example{font-size:13px;color:var(--ink);font-style:italic;line-height:1.4;}
+
+  /* tweet card + emotion buttons */
+  .tweet-box{position:relative;background:#151A20;border:1px solid var(--card-line);border-radius:10px;padding:24px 22px;margin:8px 0 22px 0;font-size:19px;line-height:1.5;}
+  .tweet-box::before{content:"\201C";position:absolute;top:-6px;left:14px;font-size:42px;color:var(--card-line);font-family:Georgia,serif;}
+  .emo-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px;}
+  .emo-btn{padding:14px 10px;border-radius:9px;border:1px solid var(--card-line);background:transparent;color:var(--ink);font-size:15px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;transition:transform 0.08s ease, border-color 0.08s ease, background 0.08s ease;}
+  .emo-btn:hover{transform:translateY(-1px);}
+  .emo-btn.selected{border-color:var(--ink);background:#242B33;}
+  .emo-btn.selected .emo-dot{box-shadow:0 0 0 3px rgba(232,230,225,0.18);}
+  .emo-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  .emo-btn.anger .emo-dot{background:var(--anger);}
+  .emo-btn.fear .emo-dot{background:var(--fear);}
+  .emo-btn.joy .emo-dot{background:var(--joy);}
+  .emo-btn.love .emo-dot{background:var(--love);}
+  .emo-btn.sadness .emo-dot{background:var(--sadness);}
+  .emo-btn.surprise .emo-dot{background:var(--surprise);}
+  .selection-hint{font-size:13px;color:var(--ink-dim);min-height:18px;margin-bottom:2px;}
+
+  /* progress bar */
+  .progress-row{display:flex;gap:8px;margin:18px 0 10px 0;}
+  .progress-step{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;background:none;border:none;padding:0;color:var(--ink-dim);font-family:inherit;}
+  .progress-circle{width:32px;height:32px;border-radius:50%;border:1px solid var(--card-line);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--ink-dim);background:transparent;}
+  .progress-step.current .progress-circle{border-color:var(--ink);color:var(--ink);}
+  .progress-step.answered .progress-circle{background:var(--ink-dim);border-color:var(--ink-dim);color:var(--bg);}
+  .progress-step.answered.current .progress-circle{background:var(--ink);border-color:var(--ink);color:var(--bg);}
+  .progress-label{font-size:11px;}
+  .finish-row{margin-top:6px;}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="page">
 
   <!-- SCREEN 1: INTRO -->
   <div id="screen-intro">
     <div class="eyebrow">Emotion Labeling Task</div>
     <h1>Label 5 tweets by emotion</h1>
-    <div class="card">
-      <p>You'll read 5 short tweets, one at a time, and choose the emotion each one is expressing.</p>
-      <ul class="rules">
-        <li>Pick <strong>one</strong> emotion per tweet: anger, fear, joy, love, sadness, or surprise.</li>
-        <li>Go with your first instinct &mdash; there's no perfect answer, we want your honest read.</li>
-        <li>Everyone sees a different random set of 5 tweets, so don't worry about comparing notes.</li>
-        <li>It takes about 2 minutes.</li>
-      </ul>
-      <label for="pid">Your name or participant ID</label>
-      <input type="text" id="pid" placeholder="e.g. jordan_p or P014">
-      <button class="primary" id="start-btn">Start labeling</button>
-      <div id="intro-error"></div>
+    <div class="layout">
+      <div class="card">
+        <p>You'll read 5 short tweets, one at a time, and choose the emotion each one is expressing.</p>
+        <ul class="rules">
+          <li>Pick <strong>one</strong> emotion per tweet: anger, fear, joy, love, sadness, or surprise.</li>
+          <li>Go with your first instinct &mdash; there's no perfect answer, we want your honest read.</li>
+          <li>A guide with a definition and example for each emotion stays visible on the right the whole time.</li>
+          <li>You can revisit and change any of your 5 answers before you finish.</li>
+          <li>Everyone sees a different random set of 5 tweets, so don't worry about comparing notes.</li>
+          <li>It takes about 2 minutes.</li>
+        </ul>
+        <label for="pid">Your name or participant ID</label>
+        <input type="text" id="pid" placeholder="e.g. jordan_p or P014">
+        <button class="primary" id="start-btn">Start labeling</button>
+        <div id="intro-error"></div>
+      </div>
+      <aside class="side-col card" id="side-col-intro"></aside>
     </div>
     <div class="footer-note">Your responses are saved with your ID so we know who labeled what.<br>
       <a class="link-btn" id="view-results-link">View collected results &rarr;</a>
@@ -103,10 +137,19 @@
   <div id="screen-task" class="hidden">
     <div class="eyebrow">Emotion Labeling Task</div>
     <h1 id="task-heading">Tweet 1 of 5</h1>
-    <div class="card">
-      <div class="dots" id="dots"></div>
-      <div class="tweet-box" id="tweet-text"></div>
-      <div class="emo-grid" id="emo-grid"></div>
+    <div class="layout">
+      <div class="card">
+        <div class="tweet-box" id="tweet-text"></div>
+        <div class="emo-grid" id="emo-grid"></div>
+        <div class="selection-hint" id="selection-hint"></div>
+        <button class="primary" id="submit-answer-btn" disabled>Submit answer</button>
+
+        <div class="progress-row" id="progress-row"></div>
+        <div class="finish-row">
+          <button class="primary secondary" id="finish-btn" disabled>Finish &amp; submit all 5 answers</button>
+        </div>
+      </div>
+      <aside class="side-col card" id="side-col-task"></aside>
     </div>
   </div>
 
@@ -114,29 +157,29 @@
   <div id="screen-done" class="hidden">
     <div class="eyebrow">Emotion Labeling Task</div>
     <h1 id="done-heading">Saving your answers...</h1>
-    <div class="card">
-      <p id="done-message" class="spinner-text">Sending your labels to the server, one moment.</p>
-    </div>
-    <div class="footer-note">
-      <a class="link-btn" id="view-results-link-2">View collected results &rarr;</a>
+    <div class="layout no-sidebar">
+      <div class="card">
+        <p id="done-message" class="spinner-text">Sending your labels to the server, one moment.</p>
+      </div>
     </div>
   </div>
 
-  <!-- SCREEN 4: RESULTS -->
+  <!-- SCREEN 4: RESULTS (researcher view) -->
   <div id="screen-results" class="hidden">
     <div class="eyebrow">Emotion Labeling Task</div>
     <h1>Collected results</h1>
-    <div class="card">
-      <p class="muted" id="results-summary">Loading...</p>
-      <div id="results-error"></div>
-      <div style="overflow-x:auto;">
-        <table id="results-table">
-          <thead><tr><th>Participant</th><th>Tweet</th><th>Label</th><th>Submitted</th></tr></thead>
-          <tbody id="results-body"></tbody>
-        </table>
+    <div class="layout no-sidebar">
+      <div class="card">
+        <p class="muted" id="results-summary">Loading...</p>
+        <div id="results-error"></div>
+        <div style="overflow-x:auto;">
+          <table id="results-table">
+            <thead><tr><th>Participant</th><th>Tweet</th><th>Label</th><th>Submitted</th></tr></thead>
+            <tbody id="results-body"></tbody>
+          </table>
+        </div>
+        <button class="primary secondary" id="back-btn" style="margin-top:8px;">Back to task</button>
       </div>
-      <button class="primary" id="download-btn">Download as CSV</button>
-      <button class="primary secondary" id="back-btn" style="margin-top:8px;">Back to task</button>
     </div>
   </div>
 
@@ -153,21 +196,41 @@ const CONFIG = {
 };
 
 const EMOTIONS = [
-  {key:"anger", label:"Anger"},
-  {key:"fear", label:"Fear"},
-  {key:"joy", label:"Joy"},
-  {key:"love", label:"Love"},
-  {key:"sadness", label:"Sadness"},
-  {key:"surprise", label:"Surprise"},
+  {key:"anger", label:"Anger", def:"Feeling upset, frustrated, or hostile about something that feels wrong or unfair.", example:"cannot believe he lied to my face again this is infuriating"},
+  {key:"fear", label:"Fear", def:"Feeling scared, anxious, or threatened by something that might happen.", example:"im so nervous about the interview i can barely eat"},
+  {key:"joy", label:"Joy", def:"Feeling happy, pleased, or delighted about something good.", example:"this is honestly the best day ive had in months"},
+  {key:"love", label:"Love", def:"Feeling warmth, affection, or deep care toward someone or something.", example:"my heart is so full watching my kids play together"},
+  {key:"sadness", label:"Sadness", def:"Feeling down, hurt, or a sense of loss.", example:"i feel so lonely since everyone moved away"},
+  {key:"surprise", label:"Surprise", def:"Feeling caught off guard by something unexpected.", example:"i cannot believe they threw me a surprise party i had no idea"},
 ];
 
-// The tweet pool is loaded at runtime from tweets.json (sampled from the real
-// dair-ai/emotion dataset), rather than being hardcoded here. See loadTweetPool().
+// The tweet pool is loaded at runtime from tweets.json (the full dair-ai/emotion
+// dataset), rather than being hardcoded here. See loadTweetPool().
 let TWEETS = [];
 let tweetsLoaded = false;
 let tweetsLoadError = null;
 
-let session = { participant:"", tweets:[], answers:[], idx:0 };
+// session.responses holds one slot per selected tweet: null until answered,
+// then { tweet_id, tweet_text, true_label, chosen_label }.
+let session = { participant:"", tweets:[], responses:[], idx:0 };
+let pendingChoice = null; // emotion key currently highlighted for the tweet on screen, before Submit is pressed
+
+function buildGuideHtml(){
+  return `
+    <h2>Emotion guide</h2>
+    <p class="muted" style="margin-bottom:10px;">Refer back to this anytime while labeling.</p>
+    ${EMOTIONS.map(e => `
+      <div class="guide-item">
+        <span class="guide-dot ${e.key}"></span>
+        <div class="guide-text">
+          <div class="guide-name">${e.label}</div>
+          <div class="guide-def">${e.def}</div>
+          <div class="guide-example">&ldquo;${e.example}&rdquo;</div>
+        </div>
+      </div>
+    `).join("")}
+  `;
+}
 
 async function loadTweetPool(){
   if(tweetsLoaded) return true;
@@ -205,6 +268,20 @@ function endpointConfigured(){
   return CONFIG.APPS_SCRIPT_URL && !CONFIG.APPS_SCRIPT_URL.includes("PASTE_YOUR");
 }
 
+function escapeHtml(str){
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function colorFor(key){
+  const map = {anger:"#C0392B", fear:"#6C4FA0", joy:"#D9A02B", love:"#C9557F", sadness:"#3E75B0", surprise:"#2E9E92"};
+  return map[key] || "#9AA3AC";
+}
+
+document.getElementById("side-col-intro").innerHTML = buildGuideHtml();
+document.getElementById("side-col-task").innerHTML = buildGuideHtml();
+
 document.getElementById("start-btn").addEventListener("click", async ()=>{
   const pidInput = document.getElementById("pid");
   const pid = pidInput.value.trim();
@@ -234,52 +311,108 @@ document.getElementById("start-btn").addEventListener("click", async ()=>{
     return;
   }
 
-  session = { participant: pid, tweets: shuffle(TWEETS).slice(0,5), answers: [], idx: 0 };
-  renderTweet();
-  show("screen-task");
+  startTask(pid);
 });
 
-function renderDots(){
-  const dots = document.getElementById("dots");
-  dots.innerHTML = "";
-  for(let i=0;i<5;i++){
-    const d = document.createElement("div");
-    d.className = "dot" + (i<session.idx ? " done" : i===session.idx ? " current" : "");
-    dots.appendChild(d);
-  }
+function startTask(pid){
+  session = {
+    participant: pid,
+    tweets: shuffle(TWEETS).slice(0,5),
+    responses: [null,null,null,null,null],
+    idx: 0
+  };
+  pendingChoice = null;
+  renderTweet(0);
+  show("screen-task");
 }
 
-function renderTweet(){
-  renderDots();
-  document.getElementById("task-heading").textContent = `Tweet ${session.idx+1} of 5`;
-  document.getElementById("tweet-text").textContent = session.tweets[session.idx].text;
+function renderProgressRow(){
+  const row = document.getElementById("progress-row");
+  row.innerHTML = "";
+  session.responses.forEach((resp, i)=>{
+    const step = document.createElement("button");
+    step.type = "button";
+    step.className = "progress-step" + (i===session.idx ? " current" : "") + (resp ? " answered" : "");
+    step.innerHTML = `<span class="progress-circle">${resp ? "&#10003;" : (i+1)}</span><span class="progress-label">Tweet ${i+1}</span>`;
+    step.addEventListener("click", ()=>goToTweet(i));
+    row.appendChild(step);
+  });
+  const finishBtn = document.getElementById("finish-btn");
+  const allAnswered = session.responses.every(r => r !== null);
+  finishBtn.disabled = !allAnswered;
+}
+
+function goToTweet(i){
+  session.idx = i;
+  pendingChoice = session.responses[i] ? session.responses[i].chosen_label : null;
+  renderTweet(i);
+}
+
+function renderTweet(idx){
+  session.idx = idx;
+  const tweet = session.tweets[idx];
+  const existing = session.responses[idx];
+  pendingChoice = existing ? existing.chosen_label : null;
+
+  document.getElementById("task-heading").textContent = `Tweet ${idx+1} of 5`;
+  document.getElementById("tweet-text").textContent = tweet.text;
 
   const grid = document.getElementById("emo-grid");
   grid.innerHTML = "";
   EMOTIONS.forEach(e=>{
     const btn = document.createElement("button");
-    btn.className = `emo-btn ${e.key}`;
+    btn.type = "button";
+    btn.className = `emo-btn ${e.key}` + (pendingChoice === e.key ? " selected" : "");
     btn.innerHTML = `<span class="emo-dot"></span>${e.label}`;
-    btn.addEventListener("click", ()=>selectEmotion(e.key));
+    btn.addEventListener("click", ()=>choosePending(e.key));
     grid.appendChild(btn);
   });
+
+  const hint = document.getElementById("selection-hint");
+  hint.textContent = pendingChoice ? `Selected: ${capitalize(pendingChoice)}` : "Pick the emotion this tweet expresses.";
+
+  const submitBtn = document.getElementById("submit-answer-btn");
+  submitBtn.disabled = !pendingChoice;
+  submitBtn.textContent = existing ? "Update answer" : "Submit answer";
+
+  renderProgressRow();
 }
 
-function selectEmotion(chosenKey){
+function capitalize(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+
+function choosePending(key){
+  pendingChoice = key;
+  document.querySelectorAll("#emo-grid .emo-btn").forEach(b=>{
+    b.classList.toggle("selected", b.classList.contains(key));
+  });
+  const hint = document.getElementById("selection-hint");
+  hint.textContent = `Selected: ${capitalize(key)}`;
+  document.getElementById("submit-answer-btn").disabled = false;
+}
+
+document.getElementById("submit-answer-btn").addEventListener("click", ()=>{
+  if(!pendingChoice) return;
   const tweet = session.tweets[session.idx];
-  session.answers.push({
+  session.responses[session.idx] = {
     tweet_id: tweet.id,
     tweet_text: tweet.text,
     true_label: tweet.label,
-    chosen_label: chosenKey
-  });
-  session.idx++;
-  if(session.idx < 5){
-    renderTweet();
+    chosen_label: pendingChoice
+  };
+
+  // move to the next unanswered tweet, if any; otherwise stay put (all answered)
+  const nextUnanswered = session.responses.findIndex(r => r === null);
+  if(nextUnanswered !== -1){
+    renderTweet(nextUnanswered);
   } else {
-    finishSession();
+    renderTweet(session.idx); // refresh current view (shows "Update answer", progress, enabled Finish button)
   }
-}
+});
+
+document.getElementById("finish-btn").addEventListener("click", ()=>{
+  if(session.responses.some(r => r === null)) return;
+  finishSession();
+});
 
 async function finishSession(){
   show("screen-done");
@@ -300,7 +433,7 @@ async function finishSession(){
   const record = {
     participant: session.participant,
     submitted_at: new Date().toISOString(),
-    answers: session.answers
+    answers: session.responses
   };
 
   try{
@@ -315,11 +448,10 @@ async function finishSession(){
     const data = await res.json();
     if(data.status !== "ok") throw new Error(data.message || "Unknown error from server");
 
-    document.getElementById("done-heading").textContent = "All done — thank you";
+    document.getElementById("done-heading").textContent = "Thank you!";
     document.getElementById("done-message").className = "";
     document.getElementById("done-message").innerHTML =
-      `You labeled 5 tweets as <strong>${escapeHtml(session.participant)}</strong>. Your responses have been recorded.`;
-    addRestartButton();
+      `Thanks, <strong>${escapeHtml(session.participant)}</strong> &mdash; your 5 labels have been recorded. We appreciate your time.`;
   } catch(err){
     console.error(err);
     document.getElementById("done-heading").textContent = "Couldn't save your answers";
@@ -331,32 +463,14 @@ async function finishSession(){
   }
 }
 
-function addRestartButton(){
-  const card = document.getElementById("screen-done").querySelector(".card");
-  removeExtraButtons(card);
-  const btn = document.createElement("button");
-  btn.className = "primary";
-  btn.textContent = "Label 5 more";
-  btn.addEventListener("click", ()=>{
-    session = { participant: session.participant, tweets: shuffle(TWEETS).slice(0,5), answers: [], idx: 0 };
-    renderTweet();
-    show("screen-task");
-  });
-  card.appendChild(btn);
-}
-
 function addRetryButton(){
-  const card = document.getElementById("screen-done").querySelector(".card");
-  removeExtraButtons(card);
+  const card = document.querySelector("#screen-done .card");
+  card.querySelectorAll("button").forEach(b=>b.remove());
   const btn = document.createElement("button");
   btn.className = "primary";
   btn.textContent = "Retry";
   btn.addEventListener("click", finishSession);
   card.appendChild(btn);
-}
-
-function removeExtraButtons(card){
-  card.querySelectorAll("button").forEach(b=>b.remove());
 }
 
 let currentRows = [];
@@ -399,47 +513,8 @@ async function loadResults(){
   }
 }
 
-function csvEscape(val){
-  const s = String(val ?? "");
-  if(/[",\n]/.test(s)) return `"${s.replace(/"/g,'""')}"`;
-  return s;
-}
-
-function downloadCsv(){
-  if(currentRows.length === 0){
-    alert("No labeled data to export yet.");
-    return;
-  }
-  const headers = ["participant","tweet_id","tweet_text","true_label","chosen_label","timestamp"];
-  const lines = [headers.join(",")];
-  currentRows.forEach(r=>{ lines.push(headers.map(h=>csvEscape(r[h])).join(",")); });
-  const csv = lines.join("\n");
-  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `emotion_labels_${Date.now()}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
-function colorFor(key){
-  const map = {anger:"#C0392B", fear:"#6C4FA0", joy:"#D9A02B", love:"#C9557F", sadness:"#3E75B0", surprise:"#2E9E92"};
-  return map[key] || "#9AA3AC";
-}
-
-function escapeHtml(str){
-  const div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
-}
-
 document.getElementById("view-results-link").addEventListener("click", ()=>{ show("screen-results"); loadResults(); });
-document.getElementById("view-results-link-2").addEventListener("click", ()=>{ show("screen-results"); loadResults(); });
 document.getElementById("back-btn").addEventListener("click", ()=>{ show("screen-intro"); });
-document.getElementById("download-btn").addEventListener("click", downloadCsv);
 </script>
 </body>
 </html>
