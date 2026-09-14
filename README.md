@@ -1,21 +1,67 @@
 # Emotion Labeling Task
 
 A small web app for HAI Assignment 1 (A1-2). Participants label 5 randomly
-selected tweets from a 54-tweet sample (9 per emotion, covering all six of
-anger, fear, joy, love, sadness, surprise) with the emotion they think each
-tweet expresses. Submissions are recorded (who labeled which tweet with which
-label) in a Google Sheet via a small Google Apps Script backend.
+selected tweets from the full dair-ai/emotion dataset (996 tweets, 166 per
+emotion, covering all six of anger, fear, joy, love, sadness, surprise).
+Submissions are recorded (who labeled which tweet with which label) in a
+Google Sheet via a small Google Apps Script backend.
 
 - `index.html` — the entire frontend (HTML/CSS/JS, no build step, no
   dependencies). This is what you deploy to GitHub Pages.
+- `tweets.json` — the tweet pool the app loads at runtime (`fetch("tweets.json")`).
+  Must sit in the same folder as `index.html`.
 - `Code.gs` — the backend. Paste this into a Google Apps Script project bound
   to a Google Sheet, and deploy it as a Web App.
 
+## About tweets.json
+
+This is the full dair-ai/emotion dataset from your CSV export (columns:
+`text`, `label`, where label is `0`–`5` mapped to
+`sadness, joy, love, anger, fear, surprise` respectively — the dataset's
+standard encoding), converted to JSON as-is — all 996 rows, 166 per emotion,
+nothing sampled or filtered out. Format:
+
+```json
+[
+  { "id": "t0001", "label": "sadness", "text": "..." },
+  { "id": "t0002", "label": "sadness", "text": "..." },
+  ...
+]
+```
+
+`id` and `label` are stored alongside the text mainly for your own
+record-keeping/analysis (e.g. comparing `chosen_label` to `label` later) —
+participants only ever see the `text`, and the app randomly shuffles the
+full pool before picking 5 for each participant. If you want to regenerate
+this file from a fresh CSV export, this is the conversion script used:
+
+```python
+import csv, json
+
+LABEL_MAP = {'0':'sadness','1':'joy','2':'love','3':'anger','4':'fear','5':'surprise'}
+
+out = []
+counter = 1
+with open('emotion_dataset.csv', newline='', encoding='utf-8') as f:
+    r = csv.DictReader(f)
+    for row in r:
+        text = row['text'].strip()
+        lbl = row['label'].strip()
+        if lbl not in LABEL_MAP:
+            continue
+        out.append({'id': f't{counter:04d}', 'label': LABEL_MAP[lbl], 'text': text})
+        counter += 1
+
+with open('tweets.json', 'w', encoding='utf-8') as f:
+    json.dump(out, f, indent=2)
+```
+
 ## How it works
 
-1. Participant enters an ID and starts.
-2. The app randomly shuffles the 54-tweet pool and shows 5 tweets, one at a
-   time, with 6 emotion buttons.
+1. Participant enters an ID and clicks start, which triggers a `fetch("tweets.json")`
+   to load the tweet pool.
+2. The app randomly shuffles the pool and shows 5 tweets, one at a time,
+   with 6 emotion buttons.
 3. When all 5 are labeled, the app `POST`s a JSON batch to your deployed
    Apps Script Web App URL.
 4. The Apps Script backend appends one row per labeled tweet to a "Labels"
@@ -65,9 +111,10 @@ Keep this URL — you'll paste it into the frontend next.
 
 1. Create a new GitHub repository (public is fine and simplest for grading),
    e.g. `emotion-labeling-task`.
-2. Add `index.html` (and this `README.md`, and `Code.gs` for reference/
-   grading) to the repo — either via `git push` or by dragging files into
-   the GitHub web UI ("Add file > Upload files").
+2. Add `index.html`, `tweets.json` (must be in the same folder — the app
+   fetches it as a relative path), and this `README.md` and `Code.gs` for
+   reference/grading, to the repo — either via `git push` or by dragging
+   files into the GitHub web UI ("Add file > Upload files").
 3. Open `index.html` and find this block near the top of the `<script>` tag:
    ```js
    const CONFIG = {
@@ -109,6 +156,10 @@ Keep this URL — you'll paste it into the frontend next.
 - **Nothing shows up in the Sheet** — open the Apps Script editor, go to
   **Executions** (left sidebar) to see logs/errors from recent `doPost`/
   `doGet` calls.
+- **"Couldn't load the tweet pool" error on the intro screen** — `tweets.json`
+  isn't in the same folder as `index.html` on whatever you're hosting, or
+  you're viewing the page via a local `file://` path instead of `http(s)://`
+  (browsers block `fetch` of local files from `file://` pages in most cases).
 
 ## Notes for the assignment write-up
 
@@ -117,8 +168,7 @@ Keep this URL — you'll paste it into the frontend next.
 - "Record who labeled which tweet with which label" is satisfied by the
   `participant` + `tweet_id` + `chosen_label` columns written on each
   submission.
-- The 54-tweet sample here is written in the style of dair-ai/emotion for
-  prototyping. If you have access to the actual dataset (e.g. via the
-  Hugging Face `datasets` library or a CSV export), swap the `TWEETS` array
-  in `index.html` for real rows — just keep the same `{id, label, text}`
-  shape.
+- `tweets.json` contains the full dataset (996 tweets, 166 per emotion),
+  which comfortably satisfies "at least 50 tweets... cover all six emotion
+  categories," and every participant gets a random 5 drawn from the whole
+  set rather than a fixed shortlist.
